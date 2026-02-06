@@ -1,0 +1,52 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+// Use M2 compatibility API
+$light-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
+$light-accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
+$light-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$light-theme: mat.m2-define-light-theme((color: (primary: $light-primary,
+                accent: $light-accent,
+                warn: $light-warn,
+            )));
+
+$dark-primary: mat.m2-define-palette(mat.$m2-blue-grey-palette);
+$dark-accent: mat.m2-define-palette(mat.$m2-amber-palette, A200, A100, A400);
+$dark-warn: mat.m2-define-palette(mat.$m2-deep-orange-palette);
+
+$dark-theme: mat.m2-define-dark-theme((color: (primary: $dark-primary,
+                accent: $dark-accent,
+                warn: $dark-warn,
+            )));
+
+body {
+    @include mat.all-component-themes($light-theme);
+    background-color: var(--mat-app-background-color);
+    color: var(--mat-app-text-color);
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.dark-theme {
+    @include mat.all-component-themes($dark-theme);
+}
+
+// Custom Premium Variables
+:root {
+    --primary-color: #3f51b5; // Indigo
+    --accent-color: #ff4081; // Pink
+    --card-bg: white;
+}
+
+.dark-theme {
+    --primary-color: #607d8b;
+    --accent-color: #ffd740;
+    --card-bg: #424242;
+}
+
+html {
+    height: 100%;
+}
