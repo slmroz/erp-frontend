@@ -127,3 +127,51 @@
         transform: translateY(0);
     }
 }
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+    .customer-list-container {
+        padding: 12px 8px; // Reduced padding on mobile
+
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .actions {
+                width: 100%;
+                flex-direction: column;
+                gap: 12px;
+
+                .search-field {
+                    width: 100%;
+                    margin-right: 0; // Remove right margin on mobile
+                }
+
+                button {
+                    width: 100%;
+                }
+            }
+        }
+
+        .table-container {
+            margin: 0 -8px; // Extend table to edges on mobile
+        }
+    }
+
+    // Hide columns on mobile - show only name and actions
+    table {
+
+        .mat-column-taxId,
+        .mat-column-city,
+        .mat-column-country,
+        .mat-column-www {
+            display: none;
+        }
+    }
+}

@@ -107,3 +107,37 @@
     transform: translateY(0);
   }
 }
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+  .user-list-container {
+    padding: 12px 8px; // Reduced padding on mobile
+
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .search-field {
+        width: 100%;
+        margin-right: 0; // Remove right margin
+      }
+    }
+
+    .table-container {
+      margin: 0 -8px; // Extend table to edges on mobile
+    }
+  }
+
+  // Hide ID column on mobile - show only email and actions
+  table {
+    .mat-column-id {
+      display: none;
+    }
+  }
+}
