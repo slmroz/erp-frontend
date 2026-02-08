@@ -104,45 +104,57 @@ export class CustomerDialogComponent {
     private customerService: CustomerService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<CustomerDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: CustomerDto | null
+    @Inject(MAT_DIALOG_DATA) public data: any | null
   ) {
     this.isEdit = !!data;
-    this.form = this.fb.group({
-      name: [data?.name || '', Validators.required],
-      taxId: [data?.taxId || ''],
-      address: [data?.address || ''],
-      zipCode: [data?.zipCode || ''],
-      city: [data?.city || ''],
-      country: [data?.country || ''],
-      www: [data?.www || ''],
-      facebook: [data?.facebook || '']
-    });
 
-    // Note: If Dto doesn't have address/zipCode (which it doesn't in spec), user might see empty fields on edit.
-    // Ideally we fetch details by ID on edit open if Dto is incomplete.
-    // But for list Dto, let's assume it's what we have. 
-    // Spec says GET /Customers/{id} returns CustomerDto which has SAME fields as list item in spec provided?
-    // Wait, CustomerDto in spec: id, name, taxId, city, country, www, facebook.
-    // UpdateCustomerCommand: id, name, taxId, address, zipCode, city, country, www, facebook.
-    // So if I edit, I might overwrite address/zipCode with empty if I don't fetch them.
-    // I should fetch full details on init if isEdit.
+    // Fallback mapping for data from list (might be camelCase or PascalCase)
+    const initialData = data ? {
+      name: data.name || data.Name || '',
+      taxId: data.taxId || data.TaxId || '',
+      address: data.address || data.Address || '',
+      zipCode: data.zipCode || data.ZipCode || '',
+      city: data.city || data.City || '',
+      country: data.country || data.Country || '',
+      www: data.www || data.Www || '',
+      facebook: data.facebook || data.Facebook || ''
+    } : null;
+
+    this.form = this.fb.group({
+      name: [initialData?.name || '', Validators.required],
+      taxId: [initialData?.taxId || ''],
+      address: [initialData?.address || ''],
+      zipCode: [initialData?.zipCode || ''],
+      city: [initialData?.city || ''],
+      country: [initialData?.country || ''],
+      www: [initialData?.www || ''],
+      facebook: [initialData?.facebook || '']
+    });
   }
 
   ngOnInit() {
     if (this.isEdit && this.data?.id) {
-      this.form.disable(); // Disable while loading
-      this.customerService.getCustomer(this.data.id).subscribe(details => {
-        // The API returns CustomerDto. Does CustomerDto have address key in spec?
-        // Spec provided: CustomerDto has: id, name, taxId, city, country, www, facebook.
-        // It DOES NOT have address, zipCode. 
-        // BUT UpdateCustomerCommand HAS address, zipCode.
-        // This implies the GET DTO is missing fields or the spec is inconsistent/incomplete for GET details.
-        // I will assume for now I can map what returns. If the API returns address in JSON even if not in spec schema, I can use it.
-        // Or I should stick to what's in Dto.
-
-        // Let's assume the API *should* return them and I just cast.
-        this.form.patchValue(details);
-        this.form.enable();
+      this.form.disable();
+      this.customerService.getCustomer(this.data.id).subscribe({
+        next: (details: any) => {
+          // Robust mapping for detail response (handle both casings)
+          const mapped = {
+            name: details.name || details.Name,
+            taxId: details.taxId || details.TaxId,
+            address: details.address || details.Address,
+            zipCode: details.zipCode || details.ZipCode,
+            city: details.city || details.City,
+            country: details.country || details.Country,
+            www: details.www || details.Www,
+            facebook: details.facebook || details.Facebook
+          };
+          this.form.patchValue(mapped);
+          this.form.enable();
+        },
+        error: () => {
+          this.form.enable();
+          this.snackBar.open('Error loading customer details', 'Close', { duration: 3000 });
+        }
       });
     }
   }

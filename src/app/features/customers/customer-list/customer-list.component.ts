@@ -77,7 +77,20 @@ export class CustomerListComponent implements AfterViewInit {
                     }
 
                     this.resultsLength = data.totalCount;
-                    return data.items || [];
+                    const items = data.items || [];
+
+                    // Robust mapping for preview in list (handle both casings)
+                    return items.map((item: any) => ({
+                        ...item,
+                        name: item.name || item.Name,
+                        taxId: item.taxId || item.TaxId,
+                        address: item.address || item.Address,
+                        zipCode: item.zipCode || item.ZipCode,
+                        city: item.city || item.City,
+                        country: item.country || item.Country,
+                        www: item.www || item.Www,
+                        facebook: item.facebook || item.Facebook
+                    }));
                 })
             )
             .subscribe(data => (this.data = data));
