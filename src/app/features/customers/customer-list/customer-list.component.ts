@@ -34,7 +34,7 @@ import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.comp
     styleUrls: ['./customer-list.component.scss']
 })
 export class CustomerListComponent implements AfterViewInit {
-    displayedColumns: string[] = ['name', 'taxId', 'city', 'country', 'www', 'actions'];
+    displayedColumns: string[] = ['name', 'taxId', 'address', 'city', 'country', 'www', 'actions'];
     data: CustomerDto[] = [];
     resultsLength = 0;
     isLoadingResults = true;
