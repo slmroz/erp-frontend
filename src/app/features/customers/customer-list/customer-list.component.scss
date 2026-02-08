@@ -1,0 +1,129 @@
+.customer-list-container {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease-out;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+
+        h1 {
+            margin: 0;
+            font-weight: 300;
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .search-field {
+            width: 300px;
+            font-size: 14px;
+
+            ::ng-deep {
+
+                // Reuse detailed search field styles if possible, or copy/paste
+                .mat-mdc-text-field-wrapper {
+                    background-color: var(--card-bg);
+                }
+
+                .mat-mdc-form-field-icon-suffix {
+                    color: var(--primary-color) !important;
+                }
+
+                .mdc-floating-label {
+                    color: var(--text-secondary) !important;
+                }
+
+                .mat-mdc-input-element {
+                    color: var(--text-primary) !important;
+                    caret-color: var(--primary-color);
+                }
+
+                .mdc-notched-outline__leading,
+                .mdc-notched-outline__notch,
+                .mdc-notched-outline__trailing {
+                    border-color: var(--text-secondary);
+                }
+            }
+        }
+    }
+
+    .table-container {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--card-bg, white);
+        transition: box-shadow 0.3s ease, background-color 0.3s ease;
+
+        &:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading-shade {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 56px;
+            right: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    table {
+        width: 100%;
+        background-color: transparent !important;
+
+        th.mat-mdc-header-cell {
+            color: var(--text-secondary);
+        }
+
+        td.mat-mdc-cell {
+            color: var(--text-primary);
+        }
+
+        button[mat-icon-button] {
+            color: var(--accent-color);
+
+            &[color="warn"] {
+                color: var(--mat-warn-color, #f44336);
+            }
+        }
+    }
+
+    mat-paginator {
+        background-color: transparent !important;
+        color: var(--text-primary);
+
+        ::ng-deep .mat-mdc-paginator-container {
+            color: var(--text-primary);
+        }
+
+        ::ng-deep .mat-mdc-icon-button {
+            color: var(--text-primary);
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

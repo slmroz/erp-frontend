@@ -1,11 +1,114 @@
+// Adjust layout for fixed toolbar
+.main-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+
+.sidenav-container {
+    padding-top: 64px; // Toolbar height
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.sidenav {
+    width: 250px;
+    background-color: var(--card-bg, white);
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+
+    .mat-subheader {
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .menu-group-header {
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+    }
+
+    .active-link {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: var(--primary-color);
+    }
+}
+
+// Submenu styling with ::ng-deep to override Material defaults
+::ng-deep .sidenav .submenu {
+    overflow: hidden;
+    transition: height 0.3s ease;
+
+    &.hidden {
+        display: none;
+    }
+
+    .mat-mdc-list-item,
+    a.mat-mdc-list-item,
+    .mat-list-item,
+    a.mat-list-item {
+        padding-left: 32px !important;
+        background-color: rgba(0, 0, 0, 0.08) !important;
+        border-left: 3px solid rgba(76, 175, 80, 0.3) !important;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.12) !important;
+            border-left-color: rgba(76, 175, 80, 0.5) !important;
+        }
+
+        &.active-link {
+            background-color: rgba(76, 175, 80, 0.15) !important;
+        }
+    }
+}
+
+.nav-logo {
+    margin-right: 12px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.app-title {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: white;
+}
+
 .spacer {
     flex: 1 1 auto;
 }
 
 .content {
     padding: 20px;
-    min-height: calc(100vh - 64px);
-    background-color: var(--background-color, #fafafa);
-    color: var(--text-color, rgba(0, 0, 0, 0.87));
-    transition: background-color 0.3s ease;
+    color: var(--text-color, inherit);
+}
+
+// Dark mode overrides for sidenav
+::ng-deep .dark-theme .sidenav {
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+
+    .mat-list-item,
+    .mat-mdc-list-item {
+        color: var(--text-primary);
+    }
+
+    .submenu .mat-mdc-list-item,
+    .submenu a.mat-mdc-list-item,
+    .submenu .mat-list-item,
+    .submenu a.mat-list-item {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border-left-color: rgba(76, 175, 80, 0.4) !important;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.12) !important;
+            border-left-color: rgba(76, 175, 80, 0.6) !important;
+        }
+
+        &.active-link {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+    }
 }

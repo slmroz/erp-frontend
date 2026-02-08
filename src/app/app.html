@@ -1,11 +1,52 @@
-<mat-toolbar color="primary">
-  <span>ERP Users</span>
+<mat-toolbar color="primary" class="main-toolbar">
+  <button mat-icon-button (click)="drawer.toggle()" aria-label="Toggle menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <img src="/logo.svg" alt="TeamMate Logo" height="32" class="nav-logo">
+  <span class="app-title">TeamMate ERP</span>
   <span class="spacer"></span>
   <button mat-icon-button (click)="toggleTheme()" aria-label="Toggle theme">
     <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
   </button>
 </mat-toolbar>
 
-<main class="content">
-  <app-user-list></app-user-list>
-</main>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer fixedInViewport [fixedTopGap]="64" [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false" class="sidenav">
+    <mat-nav-list>
+      <mat-list-item (click)="isAdminExpanded = !isAdminExpanded" class="menu-group-header">
+        <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+        <span matListItemTitle>Administration</span>
+      </mat-list-item>
+
+      <div [class.hidden]="!isAdminExpanded" class="submenu">
+        <a mat-list-item routerLink="/users" routerLinkActive="active-link"
+          (click)="drawer.mode === 'over' ? drawer.close() : null">
+          <mat-icon matListItemIcon>group</mat-icon>
+          <span matListItemTitle>Users</span>
+        </a>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <mat-list-item (click)="isCrmExpanded = !isCrmExpanded" class="menu-group-header">
+        <mat-icon matListItemIcon>domain</mat-icon>
+        <span matListItemTitle>CRM</span>
+      </mat-list-item>
+
+      <div [class.hidden]="!isCrmExpanded" class="submenu">
+        <a mat-list-item routerLink="/customers" routerLinkActive="active-link"
+          (click)="drawer.mode === 'over' ? drawer.close() : null">
+          <mat-icon matListItemIcon>business</mat-icon>
+          <span matListItemTitle>Customers</span>
+        </a>
+      </div>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content [class.dark-theme]="themeService.isDarkMode()">
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

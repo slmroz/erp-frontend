@@ -9,19 +9,46 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
-    
+
     h1 {
       margin: 0;
       font-weight: 300;
       font-size: 2rem;
-      background: linear-gradient(45deg, var(--primary-color, #3f51b5), var(--accent-color, #ff4081));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--primary-color);
     }
 
     .search-field {
       width: 300px;
       font-size: 14px;
+
+      // Fix visibility for Label, Input, and Icon in both modes
+      ::ng-deep {
+        .mat-mdc-text-field-wrapper {
+          background-color: var(--card-bg);
+        }
+
+        .mat-mdc-form-field-icon-suffix {
+          color: var(--primary-color) !important;
+        }
+
+        // Ensure label text contrast
+        .mdc-floating-label {
+          color: var(--text-secondary) !important;
+        }
+
+        // Ensure input text contrast
+        .mat-mdc-input-element {
+          color: var(--text-primary) !important;
+          caret-color: var(--primary-color);
+        }
+
+        // Fix outline color
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--text-secondary);
+        }
+      }
     }
   }
 
@@ -29,19 +56,54 @@
     border-radius: 8px;
     overflow: hidden;
     background: var(--card-bg, white);
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
 
     &:hover {
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     }
   }
 
   table {
     width: 100%;
+    background-color: transparent !important; // Let container background show
+
+    th.mat-mdc-header-cell {
+      color: var(--text-secondary);
+    }
+
+    td.mat-mdc-cell {
+      color: var(--text-primary);
+    }
+
+    // Ensure button icons are visible
+    button[mat-icon-button] {
+      color: var(--accent-color);
+    }
+  }
+
+  // Paginator colors
+  mat-paginator {
+    background-color: transparent !important;
+    color: var(--text-primary);
+
+    ::ng-deep .mat-mdc-paginator-container {
+      color: var(--text-primary);
+    }
+
+    ::ng-deep .mat-mdc-icon-button {
+      color: var(--text-primary);
+    }
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -3,8 +3,8 @@
 @include mat.core();
 
 // Use M2 compatibility API
-$light-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
-$light-accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
+$light-primary: mat.m2-define-palette(mat.$m2-green-palette);
+$light-accent: mat.m2-define-palette(mat.$m2-teal-palette, A200, A100, A400);
 $light-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
 $light-theme: mat.m2-define-light-theme((color: (primary: $light-primary,
@@ -12,14 +12,17 @@ $light-theme: mat.m2-define-light-theme((color: (primary: $light-primary,
                 warn: $light-warn,
             )));
 
-$dark-primary: mat.m2-define-palette(mat.$m2-blue-grey-palette);
-$dark-accent: mat.m2-define-palette(mat.$m2-amber-palette, A200, A100, A400);
+$dark-primary: mat.m2-define-palette(mat.$m2-green-palette, A200);
+$dark-accent: mat.m2-define-palette(mat.$m2-teal-palette, A200, A100, A400);
 $dark-warn: mat.m2-define-palette(mat.$m2-deep-orange-palette);
 
 $dark-theme: mat.m2-define-dark-theme((color: (primary: $dark-primary,
                 accent: $dark-accent,
                 warn: $dark-warn,
             )));
+
+// Define a separate theme object just for the toolbar to keep it consistent
+$toolbar-theme: $light-theme;
 
 body {
     @include mat.all-component-themes($light-theme);
@@ -28,23 +31,38 @@ body {
     font-family: Roboto, "Helvetica Neue", sans-serif;
     min-height: 100vh;
     margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dark-theme {
     @include mat.all-component-themes($dark-theme);
+
+    // Override background to Dark Green as requested
+    background-color: #0e2e14; // Very dark green for the whole body
+    color: #e8f5e9; // Light green text for better contrast
+
+    // Force toolbar to use the light theme color
+    .mat-toolbar.mat-primary {
+        background-color: mat.m2-get-color-from-palette($light-primary);
+        color: mat.m2-get-color-from-palette($light-primary, default-contrast);
+    }
 }
 
-// Custom Premium Variables
+// Custom Premium Variables (Green Shades)
 :root {
-    --primary-color: #3f51b5; // Indigo
-    --accent-color: #ff4081; // Pink
+    --primary-color: #4caf50; // Green 500
+    --accent-color: #009688; // Teal 500
     --card-bg: white;
+    --text-primary: rgba(0, 0, 0, 0.87);
+    --text-secondary: rgba(0, 0, 0, 0.54);
 }
 
 .dark-theme {
-    --primary-color: #607d8b;
-    --accent-color: #ffd740;
-    --card-bg: #424242;
+    --primary-color: #69f0ae; // Green A200 (Brighter for dark mode)
+    --accent-color: #64ffda; // Teal A200
+    --card-bg: #1b4d24; // Darker Green for cards (instead of grey)
+    --text-primary: #e8f5e9;
+    --text-secondary: #a5d6a7;
 }
 
 html {

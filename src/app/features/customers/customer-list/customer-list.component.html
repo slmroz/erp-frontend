@@ -1,0 +1,75 @@
+<div class="customer-list-container">
+    <div class="header">
+        <h1>Customers</h1>
+        <div class="actions">
+            <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Search</mat-label>
+                <input matInput placeholder="Name, Tax ID..." #input>
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="addCustomer()">
+                <mat-icon>add</mat-icon>
+                Add Customer
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container mat-elevation-z8">
+        <div class="loading-shade" *ngIf="isLoadingResults">
+            <!-- <mat-spinner></mat-spinner> Import spinner if needed or use text -->
+            Loading...
+        </div>
+
+        <table mat-table [dataSource]="data" matSort>
+
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="taxId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Tax ID </th>
+                <td mat-cell *matCellDef="let row"> {{row.taxId}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="city">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> City </th>
+                <td mat-cell *matCellDef="let row"> {{row.city}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="country">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Country </th>
+                <td mat-cell *matCellDef="let row"> {{row.country}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="www">
+                <th mat-header-cell *matHeaderCellDef> WWW </th>
+                <td mat-cell *matCellDef="let row">
+                    <a *ngIf="row.www" [href]="row.www" target="_blank">{{row.www}}</a>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button color="primary" (click)="editCustomer(row)" aria-label="Edit customer">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" (click)="deleteCustomer(row)" aria-label="Delete customer">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="6">No data matching the filter "{{input.value}}"</td>
+            </tr>
+        </table>
+
+        <mat-paginator [length]="resultsLength" [pageSize]="20" [pageSizeOptions]="[10, 20, 50]"
+            aria-label="Select page of customers"></mat-paginator>
+    </div>
+</div>
