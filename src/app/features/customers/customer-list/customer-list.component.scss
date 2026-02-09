@@ -94,11 +94,14 @@
         }
 
         button[mat-icon-button] {
-            color: var(--accent-color);
+            color: var(--text-primary); // Black in light, white in dark
 
-            &[color="warn"] {
-                color: var(--mat-warn-color, #f44336);
+            &:hover {
+                opacity: 0.7;
             }
+
+            // Keep specific colored icons for actions if desired, but user asked for black/white
+            // so we override the previous accent-color setting.
         }
     }
 

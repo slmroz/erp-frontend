@@ -8,9 +8,15 @@ export interface ProblemDetails {
     [key: string]: any;
 }
 
+export enum Role {
+    User = 1,
+    Admin = 2
+}
+
 export interface UserDto {
     id: number;
     email?: string | null;
+    role?: Role | number | null;
 }
 
 export interface GetUsersQuery {

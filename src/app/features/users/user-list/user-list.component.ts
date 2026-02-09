@@ -7,8 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { UserService } from '../../../api/user.service';
-import { UserDto } from '../../../api/models';
+import { UserDto, Role } from '../../../api/models';
+import { UserDialogComponent } from '../user-dialog/user-dialog.component';
 
 @Component({
     selector: 'app-user-list',
@@ -21,16 +24,21 @@ import { UserDto } from '../../../api/models';
         MatFormFieldModule,
         MatInputModule,
         MatIconModule,
-        MatButtonModule
+        MatButtonModule,
+        MatDialogModule,
+        MatSnackBarModule
     ],
     templateUrl: './user-list.component.html',
     styleUrls: ['./user-list.component.scss']
 })
 export class UserListComponent implements OnInit, AfterViewInit {
     private userService = inject(UserService);
+    private dialog = inject(MatDialog);
+    private snackBar = inject(MatSnackBar);
 
-    displayedColumns: string[] = ['id', 'email', 'actions'];
+    displayedColumns: string[] = ['id', 'email', 'role', 'actions'];
     dataSource = new MatTableDataSource<UserDto>([]);
+    Role = Role;
 
     users = signal<UserDto[]>([]);
     isLoading = signal<boolean>(true);
@@ -74,5 +82,39 @@ export class UserListComponent implements OnInit, AfterViewInit {
         if (this.dataSource.paginator) {
             this.dataSource.paginator.firstPage();
         }
+    }
+
+    editUser(user: UserDto) {
+        const dialogRef = this.dialog.open(UserDialogComponent, {
+            width: '400px',
+            data: user
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.loadUsers();
+            }
+        });
+    }
+
+    deleteUser(user: UserDto) {
+        if (confirm(`Are you sure you want to delete user ${user.email}?`)) {
+            this.userService.deleteUser(user.id).subscribe({
+                next: () => {
+                    this.snackBar.open('User deleted successfully', 'Close', { duration: 3000 });
+                    this.loadUsers();
+                },
+                error: (err) => {
+                    this.snackBar.open('Failed to delete user', 'Close', { duration: 3000 });
+                    console.error(err);
+                }
+            });
+        }
+    }
+
+    getRoleName(role: number | Role | null | undefined): string {
+        if (role === Role.Admin) return 'Admin';
+        if (role === Role.User) return 'User';
+        return 'Unknown';
     }
 }

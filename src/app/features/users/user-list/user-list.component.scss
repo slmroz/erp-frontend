@@ -75,9 +75,13 @@
       color: var(--text-primary);
     }
 
-    // Ensure button icons are visible
-    button[mat-icon-button] {
-      color: var(--accent-color);
+    // Ensure button icons are visible and theme-aware
+    .action-btn {
+      color: var(--text-primary) !important; // Will be black in light, white in dark due to global vars
+
+      &:hover {
+        opacity: 0.7;
+      }
     }
   }
 
@@ -134,9 +138,11 @@
     }
   }
 
-  // Hide ID column on mobile - show only email and actions
+  // Hide ID and Role column on mobile - show only email and actions
   table {
-    .mat-column-id {
+
+    .mat-column-id,
+    .mat-column-role {
       display: none;
     }
   }

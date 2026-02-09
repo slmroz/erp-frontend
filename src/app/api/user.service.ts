@@ -27,5 +27,11 @@ export class UserService {
         return this.http.get<UserDto>(`${this.config.apiUrl}/User/${id}`);
     }
 
-    // Add other methods if needed
+    updateUser(id: number, user: UserDto): Observable<void> {
+        return this.http.put<void>(`${this.config.apiUrl}/User/${id}`, user);
+    }
+
+    deleteUser(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.config.apiUrl}/User/${id}`);
+    }
 }
