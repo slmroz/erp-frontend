@@ -13,10 +13,30 @@ export enum Role {
     Admin = 2
 }
 
+export interface UpdateUserCommand {
+    id: number;
+    role: number;
+    email: string | null;
+}
+
 export interface UserDto {
     id: number;
+    role: number;
+    email: string | null;
+}
+
+export interface SignInCommand {
     email?: string | null;
-    role?: Role | number | null;
+    password?: string | null;
+}
+
+export interface SignUpCommand {
+    email?: string | null;
+    password?: string | null;
+}
+
+export interface JwtDto {
+    accessToken?: string | null;
 }
 
 export interface GetUsersQuery {

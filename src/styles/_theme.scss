@@ -1,0 +1,95 @@
+// Premium Design Tokens
+:root {
+    --primary-color: #2e7d32;
+    --primary-light: #4caf50;
+    --accent-color: #00897b;
+    --surface-variant: #f1f8e9;
+    --card-bg: white;
+    --text-primary: #1b5e20;
+    --text-secondary: #4caf50;
+    --link-color: #2e7d32;
+    --heading-font: 'Outfit', sans-serif;
+    --body-font: 'Inter', sans-serif;
+    --radius-lg: 12px;
+    --radius-md: 8px;
+    --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 12px 30px rgba(46, 125, 50, 0.1);
+}
+
+.dark-theme {
+    --primary-color: #81c784;
+    --primary-light: #a5d6a7;
+    --accent-color: #4db6ac;
+    --surface-variant: #1b4d24;
+    --card-bg: #113217;
+    --text-primary: #e8f5e9;
+    --text-secondary: #a5d6a7;
+    --link-color: white;
+}
+
+// Premium Design Mixins
+@mixin premium-card {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--card-bg);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(46, 125, 50, 0.1);
+
+    &:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+}
+
+@mixin premium-table-header {
+    color: white;
+    background: linear-gradient(90deg, #2e7d32, #43a047);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    padding: 16px !important;
+}
+
+@mixin premium-table-row {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: rgba(46, 125, 50, 0.05) !important;
+    }
+
+    td.mat-mdc-cell {
+        color: var(--text-primary);
+        padding: 16px !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    }
+}
+
+@mixin premium-search-field {
+    width: 300px;
+    font-size: 14px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:focus-within {
+        width: 350px;
+    }
+
+    ::ng-deep {
+        .mat-mdc-text-field-wrapper {
+            background-color: var(--card-bg) !important;
+            border-radius: var(--radius-md) !important;
+            transition: box-shadow 0.3s ease;
+        }
+
+        &:hover .mat-mdc-text-field-wrapper {
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+        }
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+            border-color: rgba(46, 125, 50, 0.3) !important;
+        }
+    }
+}

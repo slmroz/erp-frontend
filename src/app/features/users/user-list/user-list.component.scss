@@ -1,3 +1,5 @@
+@use 'theme' as *;
+
 .user-list-container {
   padding: 24px;
   max-width: 1200px;
@@ -12,75 +14,51 @@
 
     h1 {
       margin: 0;
+      font-family: var(--heading-font);
       font-weight: 300;
-      font-size: 2rem;
+      font-size: 2.5rem;
       color: var(--primary-color);
+      letter-spacing: -0.5px;
     }
 
     .search-field {
-      width: 300px;
-      font-size: 14px;
+      @include premium-search-field;
 
-      // Fix visibility for Label, Input, and Icon in both modes
       ::ng-deep {
-        .mat-mdc-text-field-wrapper {
-          background-color: var(--card-bg);
-        }
 
-        .mat-mdc-form-field-icon-suffix {
-          color: var(--primary-color) !important;
-        }
-
-        // Ensure label text contrast
-        .mdc-floating-label {
-          color: var(--text-secondary) !important;
-        }
-
-        // Ensure input text contrast
+        .mdc-floating-label,
         .mat-mdc-input-element {
-          color: var(--text-primary) !important;
-          caret-color: var(--primary-color);
-        }
-
-        // Fix outline color
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-          border-color: var(--text-secondary);
+          font-family: var(--body-font);
         }
       }
     }
   }
 
   .table-container {
-    border-radius: 8px;
-    overflow: hidden;
-    background: var(--card-bg, white);
-    transition: box-shadow 0.3s ease, background-color 0.3s ease;
-
-    &:hover {
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    }
+    @include premium-card;
+    position: relative;
   }
 
   table {
     width: 100%;
-    background-color: transparent !important; // Let container background show
+    background-color: transparent !important;
+    font-family: var(--body-font);
 
     th.mat-mdc-header-cell {
-      color: var(--text-secondary);
+      @include premium-table-header;
     }
 
-    td.mat-mdc-cell {
-      color: var(--text-primary);
+    tr.mat-mdc-row {
+      @include premium-table-row;
     }
 
-    // Ensure button icons are visible and theme-aware
     .action-btn {
-      color: var(--text-primary) !important; // Will be black in light, white in dark due to global vars
+      color: var(--primary-color) !important;
+      transition: all 0.2s ease;
 
       &:hover {
-        opacity: 0.7;
+        background-color: rgba(46, 125, 50, 0.1);
+        transform: scale(1.1);
       }
     }
   }

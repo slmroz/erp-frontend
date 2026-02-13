@@ -1,52 +1,76 @@
-<mat-toolbar color="primary" class="main-toolbar">
-  <button mat-icon-button (click)="drawer.toggle()" aria-label="Toggle menu">
-    <mat-icon>menu</mat-icon>
-  </button>
+<ng-container *ngIf="authService.isAuthenticated(); else guestLayout">
+  <mat-toolbar color="primary" class="main-toolbar">
+    <button mat-icon-button (click)="drawer.toggle()" aria-label="Toggle menu">
+      <mat-icon>menu</mat-icon>
+    </button>
 
-  <img src="assets/logo.svg" alt="TeamMate Logo" height="32" class="nav-logo">
-  <span class="app-title">TeamMate ERP</span>
-  <span class="spacer"></span>
-  <button mat-icon-button (click)="toggleTheme()" aria-label="Toggle theme">
-    <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-  </button>
-</mat-toolbar>
+    <img src="assets/logo.svg" alt="TeamMate Logo" height="32" class="nav-logo">
+    <span class="app-title">TeamMate ERP</span>
+    <span class="spacer"></span>
 
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer fixedInViewport [fixedTopGap]="64" [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false" class="sidenav">
-    <mat-nav-list>
-      <mat-list-item (click)="isAdminExpanded = !isAdminExpanded" class="menu-group-header">
-        <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
-        <span matListItemTitle>Administration</span>
-      </mat-list-item>
+    <button mat-icon-button (click)="toggleTheme()" aria-label="Toggle theme">
+      <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
 
-      <div [class.hidden]="!isAdminExpanded" class="submenu">
-        <a mat-list-item routerLink="/users" routerLinkActive="active-link"
-          (click)="drawer.mode === 'over' ? drawer.close() : null">
-          <mat-icon matListItemIcon>group</mat-icon>
-          <span matListItemTitle>Users</span>
-        </a>
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu" class="user-menu-panel">
+      <div class="user-menu-info">
+        <span class="logged-as-label">Logged in as: </span>
+        <span class="user-email-display"><b>{{ authService.userEmail() }}</b></span>
       </div>
-
       <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
 
-      <mat-list-item (click)="isCrmExpanded = !isCrmExpanded" class="menu-group-header">
-        <mat-icon matListItemIcon>domain</mat-icon>
-        <span matListItemTitle>CRM</span>
-      </mat-list-item>
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer fixedInViewport [fixedTopGap]="64" [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false" class="sidenav">
+      <mat-nav-list>
+        <ng-container *ngIf="authService.isAdmin()">
+          <mat-list-item (click)="isAdminExpanded = !isAdminExpanded" class="menu-group-header">
+            <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+            <span matListItemTitle>Administration</span>
+          </mat-list-item>
 
-      <div [class.hidden]="!isCrmExpanded" class="submenu">
-        <a mat-list-item routerLink="/customers" routerLinkActive="active-link"
-          (click)="drawer.mode === 'over' ? drawer.close() : null">
-          <mat-icon matListItemIcon>business</mat-icon>
-          <span matListItemTitle>Customers</span>
-        </a>
-      </div>
-    </mat-nav-list>
-  </mat-sidenav>
-  <mat-sidenav-content [class.dark-theme]="themeService.isDarkMode()">
-    <main class="content">
-      <router-outlet></router-outlet>
-    </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+          <div [class.hidden]="!isAdminExpanded" class="submenu">
+            <a mat-list-item routerLink="/users" routerLinkActive="active-link"
+              (click)="drawer.mode === 'over' ? drawer.close() : null">
+              <mat-icon matListItemIcon>group</mat-icon>
+              <span matListItemTitle>Users</span>
+            </a>
+          </div>
+        </ng-container>
+
+        <mat-divider></mat-divider>
+
+        <mat-list-item (click)="isCrmExpanded = !isCrmExpanded" class="menu-group-header">
+          <mat-icon matListItemIcon>domain</mat-icon>
+          <span matListItemTitle>CRM</span>
+        </mat-list-item>
+
+        <div [class.hidden]="!isCrmExpanded" class="submenu">
+          <a mat-list-item routerLink="/customers" routerLinkActive="active-link"
+            (click)="drawer.mode === 'over' ? drawer.close() : null">
+            <mat-icon matListItemIcon>business</mat-icon>
+            <span matListItemTitle>Customers</span>
+          </a>
+        </div>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content [class.dark-theme]="themeService.isDarkMode()">
+      <main class="content">
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</ng-container>
+
+<ng-template #guestLayout>
+  <router-outlet></router-outlet>
+</ng-template>

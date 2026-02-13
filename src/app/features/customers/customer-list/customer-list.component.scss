@@ -1,3 +1,5 @@
+@use 'theme' as *;
+
 .customer-list-container {
     padding: 24px;
     max-width: 1200px;
@@ -12,9 +14,11 @@
 
         h1 {
             margin: 0;
+            font-family: var(--heading-font);
             font-weight: 300;
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: var(--primary-color);
+            letter-spacing: -0.5px;
         }
 
         .actions {
@@ -24,48 +28,21 @@
         }
 
         .search-field {
-            width: 300px;
-            font-size: 14px;
+            @include premium-search-field;
 
             ::ng-deep {
 
-                // Reuse detailed search field styles if possible, or copy/paste
-                .mat-mdc-text-field-wrapper {
-                    background-color: var(--card-bg);
-                }
-
-                .mat-mdc-form-field-icon-suffix {
-                    color: var(--primary-color) !important;
-                }
-
-                .mdc-floating-label {
-                    color: var(--text-secondary) !important;
-                }
-
+                .mdc-floating-label,
                 .mat-mdc-input-element {
-                    color: var(--text-primary) !important;
-                    caret-color: var(--primary-color);
-                }
-
-                .mdc-notched-outline__leading,
-                .mdc-notched-outline__notch,
-                .mdc-notched-outline__trailing {
-                    border-color: var(--text-secondary);
+                    font-family: var(--body-font);
                 }
             }
         }
     }
 
     .table-container {
+        @include premium-card;
         position: relative;
-        border-radius: 8px;
-        overflow: hidden;
-        background: var(--card-bg, white);
-        transition: box-shadow 0.3s ease, background-color 0.3s ease;
-
-        &:hover {
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
 
         .loading-shade {
             position: absolute;
@@ -84,24 +61,35 @@
     table {
         width: 100%;
         background-color: transparent !important;
+        font-family: var(--body-font);
 
         th.mat-mdc-header-cell {
-            color: var(--text-secondary);
+            @include premium-table-header;
         }
 
-        td.mat-mdc-cell {
-            color: var(--text-primary);
+        tr.mat-mdc-row {
+            @include premium-table-row;
+        }
+
+        a {
+            color: var(--link-color);
+            transition: color 0.2s ease;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+                opacity: 0.8;
+            }
         }
 
         button[mat-icon-button] {
-            color: var(--text-primary); // Black in light, white in dark
+            color: var(--primary-color);
+            transition: all 0.2s ease;
 
             &:hover {
-                opacity: 0.7;
+                background-color: rgba(46, 125, 50, 0.1);
+                transform: scale(1.1);
             }
-
-            // Keep specific colored icons for actions if desired, but user asked for black/white
-            // so we override the previous accent-color setting.
         }
     }
 

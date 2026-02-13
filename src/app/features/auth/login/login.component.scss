@@ -1,0 +1,88 @@
+@use 'theme' as *;
+
+.login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--surface-variant) 0%, #ffffff 100%);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    @include premium-card;
+    border: none;
+    box-shadow: 0 10px 40px rgba(46, 125, 50, 0.1);
+
+    mat-card-header {
+        justify-content: center;
+        margin-bottom: 32px;
+
+        .header-content {
+            text-align: center;
+
+            .login-logo {
+                margin-bottom: 16px;
+            }
+
+            mat-card-title {
+                font-family: var(--heading-font);
+                font-size: 1.75rem;
+                font-weight: 500;
+                color: var(--primary-color);
+                margin-bottom: 8px;
+            }
+
+            mat-card-subtitle {
+                font-family: var(--body-font);
+                color: var(--text-secondary);
+            }
+        }
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        mat-form-field {
+            width: 100%;
+
+            ::ng-deep {
+                .mat-mdc-text-field-wrapper {
+                    background-color: transparent !important;
+                }
+
+                .mdc-notched-outline__leading,
+                .mdc-notched-outline__notch,
+                .mdc-notched-outline__trailing {
+                    border-color: rgba(46, 125, 50, 0.2) !important;
+                }
+
+                &:hover .mdc-notched-outline {
+                    border-color: var(--primary-color) !important;
+                }
+            }
+        }
+
+        .login-button {
+            height: 48px;
+            font-family: var(--body-font);
+            font-weight: 500;
+            font-size: 1rem;
+            margin-top: 8px;
+            background: linear-gradient(90deg, #2e7d32, #43a047);
+
+            &:disabled {
+                opacity: 0.6;
+                background: var(--text-secondary);
+            }
+        }
+    }
+}
+
+.dark-theme .login-container {
+    background: linear-gradient(135deg, #0a1f0e 0%, #113217 100%);
+}

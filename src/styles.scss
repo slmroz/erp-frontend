@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use 'styles/theme' as *;
 
 @include mat.core();
 
@@ -28,7 +29,7 @@ body {
     @include mat.all-component-themes($light-theme);
     background-color: var(--mat-app-background-color);
     color: var(--mat-app-text-color);
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: 'Inter', Roboto, "Helvetica Neue", sans-serif;
     min-height: 100vh;
     margin: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -48,22 +49,6 @@ body {
     }
 }
 
-// Custom Premium Variables (Green Shades)
-:root {
-    --primary-color: #4caf50; // Green 500
-    --accent-color: #009688; // Teal 500
-    --card-bg: white;
-    --text-primary: rgba(0, 0, 0, 0.87);
-    --text-secondary: rgba(0, 0, 0, 0.54);
-}
-
-.dark-theme {
-    --primary-color: #69f0ae; // Green A200 (Brighter for dark mode)
-    --accent-color: #64ffda; // Teal A200
-    --card-bg: #1b4d24; // Darker Green for cards (instead of grey)
-    --text-primary: #e8f5e9;
-    --text-secondary: #a5d6a7;
-}
 
 html {
     height: 100%;
