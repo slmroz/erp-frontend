@@ -36,7 +36,7 @@ export class UserListComponent implements OnInit, AfterViewInit {
     private dialog = inject(MatDialog);
     private snackBar = inject(MatSnackBar);
 
-    displayedColumns: string[] = ['id', 'email', 'role', 'actions'];
+    displayedColumns: string[] = ['id', 'email', 'firstName', 'lastName', 'role', 'actions'];
     dataSource = new MatTableDataSource<UserDto>([]);
     Role = Role;
 

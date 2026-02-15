@@ -19,11 +19,19 @@ export class AuthService {
     private _token = signal<string | null>(localStorage.getItem(this.TOKEN_KEY));
     private _role = signal<number | null>(this.getRoleFromToken(localStorage.getItem(this.TOKEN_KEY)));
     private _email = signal<string | null>(this.getEmailFromToken(localStorage.getItem(this.TOKEN_KEY)));
+    private _firstName = signal<string | null>(this.getNameFromToken(localStorage.getItem(this.TOKEN_KEY), 'firstName'));
+    private _lastName = signal<string | null>(this.getNameFromToken(localStorage.getItem(this.TOKEN_KEY), 'lastName'));
 
     isAuthenticated = computed(() => !!this._token());
     token = computed(() => this._token());
     isAdmin = computed(() => this._role() === 2); // Role.Admin = 2
     userEmail = computed(() => this._email());
+    userFullName = computed(() => {
+        const first = this._firstName();
+        const last = this._lastName();
+        if (first && last) return `${first} ${last}`;
+        return first || last || this._email() || 'User';
+    });
 
     login(command: SignInCommand): Observable<JwtDto> {
         return this.http.post<JwtDto>(`${this.config.apiUrl}/User/sign-in`, command).pipe(
@@ -45,6 +53,8 @@ export class AuthService {
         this._token.set(token);
         this._role.set(this.getRoleFromToken(token));
         this._email.set(this.getEmailFromToken(token));
+        this._firstName.set(this.getNameFromToken(token, 'firstName'));
+        this._lastName.set(this.getNameFromToken(token, 'lastName'));
     }
 
     private removeToken() {
@@ -52,6 +62,8 @@ export class AuthService {
         this._token.set(null);
         this._role.set(null);
         this._email.set(null);
+        this._firstName.set(null);
+        this._lastName.set(null);
     }
 
     private getRoleFromToken(token: string | null): number | null {
@@ -79,6 +91,25 @@ export class AuthService {
             const payload = token.split('.')[1];
             const decodedPayload = JSON.parse(atob(payload));
             return decodedPayload.email ?? decodedPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+        } catch (e) {
+            return null;
+        }
+    }
+
+    private getNameFromToken(token: string | null, type: 'firstName' | 'lastName'): string | null {
+        if (!token) return null;
+        try {
+            const payload = token.split('.')[1];
+            const decodedPayload = JSON.parse(atob(payload));
+            if (type === 'firstName') {
+                return decodedPayload.firstName ??
+                    decodedPayload.given_name ??
+                    decodedPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'];
+            } else {
+                return decodedPayload.lastName ??
+                    decodedPayload.family_name ??
+                    decodedPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'];
+            }
         } catch (e) {
             return null;
         }

@@ -29,7 +29,19 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
       <form [formGroup]="form" class="user-form">
         <mat-form-field appearance="outline">
           <mat-label>Email</mat-label>
-          <input matInput [value]="data.email" disabled>
+          <input matInput formControlName="email">
+          <mat-error *ngIf="form.get('email')?.hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="form.get('email')?.hasError('email')">Please enter a valid email</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName">
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -71,6 +83,9 @@ export class UserDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: UserDto
   ) {
     this.form = this.fb.group({
+      email: [data.email || '', [Validators.required, Validators.email]],
+      firstName: [data.firstName || ''],
+      lastName: [data.lastName || ''],
       role: [data.role || Role.User, Validators.required]
     });
   }
@@ -81,7 +96,9 @@ export class UserDialogComponent {
     this.isSaving = true;
     const command: UpdateUserCommand = {
       id: this.data.id,
-      email: this.data.email,
+      email: this.form.value.email,
+      firstName: this.form.value.firstName,
+      lastName: this.form.value.lastName,
       role: this.form.value.role
     };
 

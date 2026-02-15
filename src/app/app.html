@@ -17,8 +17,9 @@
     </button>
     <mat-menu #userMenu="matMenu" class="user-menu-panel">
       <div class="user-menu-info">
-        <span class="logged-as-label">Logged in as: </span>
-        <span class="user-email-display"><b>{{ authService.userEmail() }}</b></span>
+        <span class="logged-as-label">Logged in as:</span>
+        <span class="user-full-name"><b>{{ authService.userFullName() }}</b></span>
+        <span class="user-email-display">{{ authService.userEmail() }}</span>
       </div>
       <mat-divider></mat-divider>
       <button mat-menu-item (click)="logout()">
