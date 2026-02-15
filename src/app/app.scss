@@ -118,8 +118,11 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    min-width: 260px;
+    min-width: 240px;
+    max-width: 320px;
     background-color: var(--mat-app-background-color);
+    overflow-x: hidden;
+    box-sizing: border-box;
 
     .logged-as-label {
         font-size: 0.75rem;
@@ -137,6 +140,9 @@
         color: var(--primary-color);
         font-family: var(--heading-font);
         margin-top: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .user-email-display {

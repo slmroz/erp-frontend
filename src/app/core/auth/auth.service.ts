@@ -30,7 +30,7 @@ export class AuthService {
         const first = this._firstName();
         const last = this._lastName();
         if (first && last) return `${first} ${last}`;
-        return first || last || this._email() || 'User';
+        return first || last || 'User';
     });
 
     login(command: SignInCommand): Observable<JwtDto> {
@@ -103,10 +103,12 @@ export class AuthService {
             const decodedPayload = JSON.parse(atob(payload));
             if (type === 'firstName') {
                 return decodedPayload.firstName ??
+                    decodedPayload.FirstName ??
                     decodedPayload.given_name ??
                     decodedPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'];
             } else {
                 return decodedPayload.lastName ??
+                    decodedPayload.LastName ??
                     decodedPayload.family_name ??
                     decodedPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'];
             }
