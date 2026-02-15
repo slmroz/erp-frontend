@@ -39,6 +39,15 @@ export interface JwtDto {
     accessToken?: string | null;
 }
 
+export interface ResetPasswordCommand {
+    token: string | null;
+    newPassword: string | null;
+}
+
+export interface ForgotPasswordCommand {
+    email: string | null;
+}
+
 export interface GetUsersQuery {
     [key: string]: any;
 }

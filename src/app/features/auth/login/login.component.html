@@ -35,6 +35,10 @@
                     <span *ngIf="!isLoading()">Sign In</span>
                     <span *ngIf="isLoading()">Signing in...</span>
                 </button>
+
+                <div class="login-footer">
+                    <a mat-button color="accent" routerLink="/forgot-password">Forgot password?</a>
+                </div>
             </form>
         </mat-card-content>
     </mat-card>
