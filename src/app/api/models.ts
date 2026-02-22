@@ -102,3 +102,36 @@ export interface UpdateCustomerCommand {
     www?: string | null;
     facebook?: string | null;
 }
+// Contact Interfaces
+export interface ContactDto {
+    id: number;
+    customerId?: number | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    phoneNo?: string | null;
+    email?: string | null;
+    customerName?: string | null;
+}
+
+export interface ContactDtoPagedResult {
+    totalCount: number;
+    items?: ContactDto[] | null;
+}
+
+export interface AddContactCommand {
+    id?: number | null;
+    customerId?: number | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    phoneNo?: string | null;
+    email?: string | null;
+}
+
+export interface UpdateContactCommand {
+    id: number;
+    customerId?: number | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    phoneNo?: string | null;
+    email?: string | null;
+}

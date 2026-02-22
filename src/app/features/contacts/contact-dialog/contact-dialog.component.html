@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Contact' : 'Add Contact' }}</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="contact-form">
+        <div style="display: flex; gap: 16px;">
+            <mat-form-field appearance="outline" style="flex: 1;">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName">
+                <mat-error *ngIf="form.get('firstName')?.hasError('required')">First name is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" style="flex: 1;">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName">
+                <mat-error *ngIf="form.get('lastName')?.hasError('required')">Last name is required</mat-error>
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email">
+            <mat-error *ngIf="form.get('email')?.hasError('email')">Please enter a valid email</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phoneNo">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Customer</mat-label>
+            <mat-select formControlName="customerId">
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let customer of customers" [value]="customer.id">
+                    {{customer.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="form.invalid || isSaving" (click)="save()">
+        {{ isSaving ? 'Saving...' : (isEditMode ? 'Save' : 'Create') }}
+    </button>
+</mat-dialog-actions>

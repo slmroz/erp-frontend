@@ -60,6 +60,10 @@
                     <button mat-icon-button color="primary" (click)="editCustomer(row)" aria-label="Edit customer">
                         <mat-icon>edit</mat-icon>
                     </button>
+                    <button mat-icon-button (click)="goToContacts(row)" aria-label="View contacts"
+                        matTooltip="View Contacts">
+                        <mat-icon>contacts</mat-icon>
+                    </button>
                     <button mat-icon-button color="warn" (click)="deleteCustomer(row)" aria-label="Delete customer">
                         <mat-icon>delete</mat-icon>
                     </button>

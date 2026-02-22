@@ -61,6 +61,11 @@
             <mat-icon matListItemIcon>business</mat-icon>
             <span matListItemTitle>Customers</span>
           </a>
+          <a mat-list-item routerLink="/contacts" routerLinkActive="active-link"
+            (click)="drawer.mode === 'over' ? drawer.close() : null">
+            <mat-icon matListItemIcon>contacts</mat-icon>
+            <span matListItemTitle>Contacts</span>
+          </a>
         </div>
       </mat-nav-list>
     </mat-sidenav>
