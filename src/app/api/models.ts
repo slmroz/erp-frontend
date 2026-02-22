@@ -37,6 +37,9 @@ export interface SignInCommand {
 export interface SignUpCommand {
     email?: string | null;
     password?: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    role?: number | null;
 }
 
 export interface JwtDto {

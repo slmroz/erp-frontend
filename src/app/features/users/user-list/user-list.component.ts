@@ -84,6 +84,19 @@ export class UserListComponent implements OnInit, AfterViewInit {
         }
     }
 
+    addUser() {
+        const dialogRef = this.dialog.open(UserDialogComponent, {
+            width: '400px',
+            data: null
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.loadUsers();
+            }
+        });
+    }
+
     editUser(user: UserDto) {
         const dialogRef = this.dialog.open(UserDialogComponent, {
             width: '400px',

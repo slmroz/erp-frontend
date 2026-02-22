@@ -21,6 +21,12 @@
       letter-spacing: -0.5px;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
     .search-field {
       @include premium-search-field;
 
@@ -30,6 +36,18 @@
         .mat-mdc-input-element {
           font-family: var(--body-font);
         }
+      }
+    }
+
+    .add-user-btn {
+      height: 56px;
+      padding: 0 24px;
+      font-weight: 500;
+      border-radius: 8px;
+      font-family: var(--body-font);
+
+      mat-icon {
+        margin-right: 8px;
       }
     }
   }

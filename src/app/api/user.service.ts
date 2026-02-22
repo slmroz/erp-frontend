@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../core/config/config.service';
-import { UserDto, GetUsers, UpdateUserCommand, ResetPasswordCommand, ForgotPasswordCommand } from './models';
+import { UserDto, GetUsers, UpdateUserCommand, SignUpCommand, ResetPasswordCommand, ForgotPasswordCommand } from './models';
 
 @Injectable({
     providedIn: 'root'
@@ -29,6 +29,10 @@ export class UserService {
 
     updateUser(id: number, command: UpdateUserCommand): Observable<void> {
         return this.http.put<void>(`${this.config.apiUrl}/User/${id}`, command);
+    }
+
+    addUser(command: SignUpCommand): Observable<void> {
+        return this.http.post<void>(`${this.config.apiUrl}/User/sign-up`, command);
     }
 
     forgotPassword(command: ForgotPasswordCommand): Observable<void> {
