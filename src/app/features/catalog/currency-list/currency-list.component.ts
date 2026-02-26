@@ -12,8 +12,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
-import { merge, of } from 'rxjs';
-import { catchError, map, startWith, switchMap } from 'rxjs/operators';
+import { merge, of, fromEvent } from 'rxjs';
+import { catchError, map, startWith, switchMap, debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { CurrencyService } from '../../../api/currency.service';
 import { CurrencyDto } from '../../../api/models';
 import { CurrencyDialogComponent } from '../currency-dialog/currency-dialog.component';
@@ -49,6 +49,7 @@ export class CurrencyListComponent implements AfterViewInit {
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
+    @ViewChild('targetFilter') targetFilter!: ElementRef;
 
     constructor(
         private currencyService: CurrencyService,
@@ -59,20 +60,28 @@ export class CurrencyListComponent implements AfterViewInit {
     ngAfterViewInit() {
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
-        merge(this.sort.sortChange, this.paginator.page)
+        const filterEvent = fromEvent(this.targetFilter.nativeElement, 'keyup').pipe(
+            debounceTime(150),
+            distinctUntilChanged(),
+            tap(() => (this.paginator.pageIndex = 0))
+        );
+
+        merge(this.sort.sortChange, this.paginator.page, filterEvent)
             .pipe(
                 startWith({}),
                 switchMap(() => {
                     this.isLoadingResults = true;
                     const refreshParam = this.isRefreshing;
-                    this.isRefreshing = false; // Reset after reading
+                    this.isRefreshing = false;
 
                     return this.currencyService.getCurrencies(
                         this.paginator.pageIndex + 1,
                         this.paginator.pageSize,
-                        undefined, // baseCurrency filter not implemented in UI search yet
-                        undefined, // targetCurrency filter not implemented in UI search yet
-                        refreshParam
+                        undefined,
+                        this.targetFilter.nativeElement.value,
+                        refreshParam,
+                        this.sort.active,
+                        this.sort.direction
                     ).pipe(catchError(() => of(null)));
                 }),
                 map(data => {

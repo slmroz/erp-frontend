@@ -5,6 +5,11 @@
         </div>
 
         <div class="header-actions">
+            <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Target Currency</mat-label>
+                <input matInput placeholder="Ex. EUR" #targetFilter>
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
             <button mat-stroked-button color="accent" class="action-btn-main" (click)="refreshData()"
                 [disabled]="isLoadingResults" matTooltip="Fetch latest rates from server">
                 <mat-icon>refresh</mat-icon>
