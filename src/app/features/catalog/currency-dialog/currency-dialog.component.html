@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Currency' : 'Add Currency' }}</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="currency-form">
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Base Currency</mat-label>
+                <input matInput formControlName="baseCurrency" placeholder="Ex. USD" maxlength="3">
+                <mat-error *ngIf="form.get('baseCurrency')?.hasError('required')">Base currency is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Target Currency</mat-label>
+                <input matInput formControlName="targetCurrency" placeholder="Ex. EUR" maxlength="3">
+                <mat-error *ngIf="form.get('targetCurrency')?.hasError('required')">Target currency is
+                    required</mat-error>
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Exchange Rate</mat-label>
+            <input matInput type="number" formControlName="rate" placeholder="0.0000">
+            <mat-error *ngIf="form.get('rate')?.hasError('required')">Rate is required</mat-error>
+            <mat-error *ngIf="form.get('rate')?.hasError('min')">Rate must be positive</mat-error>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="form.invalid || isSaving" (click)="save()">
+        {{ isSaving ? 'Saving...' : (isEditMode ? 'Save' : 'Create') }}
+    </button>
+</mat-dialog-actions>

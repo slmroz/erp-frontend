@@ -1,0 +1,75 @@
+<div class="product-group-list-container">
+    <div class="header">
+        <div class="header-title">
+            <h1>Product Groups</h1>
+        </div>
+
+        <div class="header-actions">
+            <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Search</mat-label>
+                <input matInput placeholder="Ex. Electronics" #input>
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            <button mat-raised-button color="primary" class="add-btn" (click)="addProductGroup()">
+                <mat-icon>add_circle</mat-icon>
+                Add Group
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container mat-elevation-z8">
+        <div class="loading-shade" *ngIf="isLoadingResults">
+            <mat-spinner></mat-spinner>
+        </div>
+
+        <table mat-table [dataSource]="data" matSort>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <!-- Description Column -->
+            <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+                <td mat-cell *matCellDef="let row"> {{row.description}} </td>
+            </ng-container>
+
+            <!-- Product Count Column -->
+            <ng-container matColumnDef="productCount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Product Count </th>
+                <td mat-cell *matCellDef="let row"> {{row.productCount}} </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="goToProducts(row)" matTooltip="View Products"
+                        class="action-btn products-btn">
+                        <mat-icon>inventory_2</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="editProductGroup(row)" aria-label="Edit group"
+                        class="action-btn edit-btn">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="deleteProductGroup(row)" aria-label="Delete group"
+                        class="action-btn delete-btn">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            </tr>
+        </table>
+
+        <mat-paginator [length]="resultsLength" [pageSize]="20" [pageSizeOptions]="[5, 10, 20, 50]"
+            aria-label="Select page of product groups"></mat-paginator>
+    </div>
+</div>

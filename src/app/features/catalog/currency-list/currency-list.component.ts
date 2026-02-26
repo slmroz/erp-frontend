@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
@@ -9,18 +9,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { merge, fromEvent, of } from 'rxjs';
-import { catchError, map, startWith, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ContactService } from '../../../api/contact.service';
-import { ContactDto } from '../../../api/models';
-import { ContactDialogComponent } from '../contact-dialog/contact-dialog.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
+import { merge, of } from 'rxjs';
+import { catchError, map, startWith, switchMap } from 'rxjs/operators';
+import { CurrencyService } from '../../../api/currency.service';
+import { CurrencyDto } from '../../../api/models';
+import { CurrencyDialogComponent } from '../currency-dialog/currency-dialog.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
-    selector: 'app-contact-list',
+    selector: 'app-currency-list',
     standalone: true,
     imports: [
         CommonModule,
@@ -34,64 +34,45 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/compo
         MatIconModule,
         MatDialogModule,
         MatSnackBarModule,
-        MatChipsModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatTooltipModule
     ],
-    templateUrl: './contact-list.component.html',
-    styleUrls: ['./contact-list.component.scss']
+    templateUrl: './currency-list.component.html',
+    styleUrls: ['./currency-list.component.scss']
 })
-export class ContactListComponent implements AfterViewInit, OnInit {
-    displayedColumns: string[] = ['firstName', 'lastName', 'email', 'phoneNo', 'customerName', 'actions'];
-    data: ContactDto[] = [];
+export class CurrencyListComponent implements AfterViewInit {
+    displayedColumns: string[] = ['baseCurrency', 'targetCurrency', 'rate', 'lastUpdatedAt', 'actions'];
+    data: CurrencyDto[] = [];
     resultsLength = 0;
     isLoadingResults = true;
-    customerId?: number;
-    customerName?: string;
+    isRefreshing = false;
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
-    @ViewChild('input') input!: ElementRef;
 
     constructor(
-        private contactService: ContactService,
+        private currencyService: CurrencyService,
         private dialog: MatDialog,
-        private snackBar: MatSnackBar,
-        private route: ActivatedRoute
+        private snackBar: MatSnackBar
     ) { }
-
-    ngOnInit() {
-        this.route.queryParams.subscribe(params => {
-            if (params['customerId']) {
-                this.customerId = +params['customerId'];
-                this.customerName = params['customerName'];
-                this.refreshTable();
-            }
-        });
-    }
 
     ngAfterViewInit() {
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-
-        fromEvent(this.input.nativeElement, 'keyup')
-            .pipe(
-                debounceTime(150),
-                distinctUntilChanged(),
-            )
-            .subscribe(() => {
-                this.paginator.pageIndex = 0;
-                this.refreshTable();
-            });
 
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(
                 startWith({}),
                 switchMap(() => {
                     this.isLoadingResults = true;
-                    return this.contactService.getContacts(
+                    const refreshParam = this.isRefreshing;
+                    this.isRefreshing = false; // Reset after reading
+
+                    return this.currencyService.getCurrencies(
                         this.paginator.pageIndex + 1,
                         this.paginator.pageSize,
-                        this.input.nativeElement.value,
-                        this.customerId
+                        undefined, // baseCurrency filter not implemented in UI search yet
+                        undefined, // targetCurrency filter not implemented in UI search yet
+                        refreshParam
                     ).pipe(catchError(() => of(null)));
                 }),
                 map(data => {
@@ -108,9 +89,10 @@ export class ContactListComponent implements AfterViewInit, OnInit {
             .subscribe(data => (this.data = data));
     }
 
-    applyFilter(event: Event) {
-        const filterValue = (event.target as HTMLInputElement).value;
-        // Debouncing is already handled by fromEvent logic in ngAfterViewInit
+    refreshData() {
+        this.isRefreshing = true;
+        this.paginator.pageIndex = 0;
+        this.refreshTable();
     }
 
     refreshTable() {
@@ -119,10 +101,9 @@ export class ContactListComponent implements AfterViewInit, OnInit {
         }
     }
 
-    addContact() {
-        const dialogRef = this.dialog.open(ContactDialogComponent, {
-            width: '600px',
-            data: this.customerId ? { customerId: this.customerId } : null
+    addCurrency() {
+        const dialogRef = this.dialog.open(CurrencyDialogComponent, {
+            width: '500px'
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -132,10 +113,10 @@ export class ContactListComponent implements AfterViewInit, OnInit {
         });
     }
 
-    editContact(contact: ContactDto) {
-        const dialogRef = this.dialog.open(ContactDialogComponent, {
-            width: '600px',
-            data: contact
+    editCurrency(currency: CurrencyDto) {
+        const dialogRef = this.dialog.open(CurrencyDialogComponent, {
+            width: '500px',
+            data: currency
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -145,12 +126,12 @@ export class ContactListComponent implements AfterViewInit, OnInit {
         });
     }
 
-    deleteContact(contact: ContactDto) {
+    deleteCurrency(currency: CurrencyDto) {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
             width: '400px',
             data: {
-                title: 'Delete Contact',
-                message: `Are you sure you want to delete contact ${contact.firstName} ${contact.lastName}?`,
+                title: 'Delete Currency',
+                message: `Are you sure you want to delete exchange rate for ${currency.baseCurrency}/${currency.targetCurrency}?`,
                 confirmText: 'Delete',
                 confirmColor: 'warn'
             } as ConfirmDialogData
@@ -158,23 +139,17 @@ export class ContactListComponent implements AfterViewInit, OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.contactService.deleteContact(contact.id).subscribe({
+                this.currencyService.deleteCurrency(currency.id).subscribe({
                     next: () => {
-                        this.snackBar.open('Contact deleted', 'Close', { duration: 3000 });
+                        this.snackBar.open('Currency deleted', 'Close', { duration: 3000 });
                         this.refreshTable();
                     },
                     error: (err) => {
-                        this.snackBar.open('Error deleting contact', 'Close', { duration: 3000 });
+                        this.snackBar.open('Error deleting currency', 'Close', { duration: 3000 });
                         console.error(err);
                     }
                 });
             }
         });
-    }
-
-    clearCustomerFilter() {
-        this.customerId = undefined;
-        this.customerName = undefined;
-        this.refreshTable();
     }
 }

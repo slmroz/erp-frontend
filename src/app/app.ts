@@ -47,6 +47,7 @@ export class App {
   // Menu state
   isAdminExpanded = true;
   isCrmExpanded = true;
+  isCatalogExpanded = true;
 
   toggleTheme() {
     this.themeService.toggleTheme();

@@ -4,7 +4,7 @@
             <h1>Contacts</h1>
             <mat-chip-listbox *ngIf="customerId" class="filter-chip">
                 <mat-chip (removed)="clearCustomerFilter()">
-                    Customer Filter ID: {{customerId}}
+                    Customer: {{customerName || customerId}}
                     <button matChipRemove aria-label="remove">
                         <mat-icon>cancel</mat-icon>
                     </button>

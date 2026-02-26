@@ -11,16 +11,17 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { merge, fromEvent, of } from 'rxjs';
 import { catchError, map, startWith, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ContactService } from '../../../api/contact.service';
-import { ContactDto } from '../../../api/models';
-import { ContactDialogComponent } from '../contact-dialog/contact-dialog.component';
+import { ProductService } from '../../../api/product.service';
+import { ProductDto } from '../../../api/models';
+import { ProductDialogComponent } from '../product-dialog/product-dialog.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
-    selector: 'app-contact-list',
+    selector: 'app-product-list',
     standalone: true,
     imports: [
         CommonModule,
@@ -35,25 +36,26 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/compo
         MatDialogModule,
         MatSnackBarModule,
         MatChipsModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatTooltipModule
     ],
-    templateUrl: './contact-list.component.html',
-    styleUrls: ['./contact-list.component.scss']
+    templateUrl: './product-list.component.html',
+    styleUrls: ['./product-list.component.scss']
 })
-export class ContactListComponent implements AfterViewInit, OnInit {
-    displayedColumns: string[] = ['firstName', 'lastName', 'email', 'phoneNo', 'customerName', 'actions'];
-    data: ContactDto[] = [];
+export class ProductListComponent implements AfterViewInit, OnInit {
+    displayedColumns: string[] = ['name', 'groupName', 'partNumber', 'listPrice', 'actions'];
+    data: ProductDto[] = [];
     resultsLength = 0;
     isLoadingResults = true;
-    customerId?: number;
-    customerName?: string;
+    groupId?: number;
+    groupName?: string;
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
     @ViewChild('input') input!: ElementRef;
 
     constructor(
-        private contactService: ContactService,
+        private productService: ProductService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
         private route: ActivatedRoute
@@ -61,9 +63,9 @@ export class ContactListComponent implements AfterViewInit, OnInit {
 
     ngOnInit() {
         this.route.queryParams.subscribe(params => {
-            if (params['customerId']) {
-                this.customerId = +params['customerId'];
-                this.customerName = params['customerName'];
+            if (params['groupId']) {
+                this.groupId = +params['groupId'];
+                this.groupName = params['groupName'];
                 this.refreshTable();
             }
         });
@@ -87,11 +89,11 @@ export class ContactListComponent implements AfterViewInit, OnInit {
                 startWith({}),
                 switchMap(() => {
                     this.isLoadingResults = true;
-                    return this.contactService.getContacts(
+                    return this.productService.getProducts(
                         this.paginator.pageIndex + 1,
                         this.paginator.pageSize,
                         this.input.nativeElement.value,
-                        this.customerId
+                        this.groupId
                     ).pipe(catchError(() => of(null)));
                 }),
                 map(data => {
@@ -108,21 +110,16 @@ export class ContactListComponent implements AfterViewInit, OnInit {
             .subscribe(data => (this.data = data));
     }
 
-    applyFilter(event: Event) {
-        const filterValue = (event.target as HTMLInputElement).value;
-        // Debouncing is already handled by fromEvent logic in ngAfterViewInit
-    }
-
     refreshTable() {
         if (this.paginator) {
             this.paginator.page.emit();
         }
     }
 
-    addContact() {
-        const dialogRef = this.dialog.open(ContactDialogComponent, {
+    addProduct() {
+        const dialogRef = this.dialog.open(ProductDialogComponent, {
             width: '600px',
-            data: this.customerId ? { customerId: this.customerId } : null
+            data: this.groupId ? { productGroupId: this.groupId } : null
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -132,10 +129,10 @@ export class ContactListComponent implements AfterViewInit, OnInit {
         });
     }
 
-    editContact(contact: ContactDto) {
-        const dialogRef = this.dialog.open(ContactDialogComponent, {
+    editProduct(product: ProductDto) {
+        const dialogRef = this.dialog.open(ProductDialogComponent, {
             width: '600px',
-            data: contact
+            data: product
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -145,12 +142,12 @@ export class ContactListComponent implements AfterViewInit, OnInit {
         });
     }
 
-    deleteContact(contact: ContactDto) {
+    deleteProduct(product: ProductDto) {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
             width: '400px',
             data: {
-                title: 'Delete Contact',
-                message: `Are you sure you want to delete contact ${contact.firstName} ${contact.lastName}?`,
+                title: 'Delete Product',
+                message: `Are you sure you want to delete product "${product.name}"?`,
                 confirmText: 'Delete',
                 confirmColor: 'warn'
             } as ConfirmDialogData
@@ -158,13 +155,13 @@ export class ContactListComponent implements AfterViewInit, OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.contactService.deleteContact(contact.id).subscribe({
+                this.productService.deleteProduct(product.id).subscribe({
                     next: () => {
-                        this.snackBar.open('Contact deleted', 'Close', { duration: 3000 });
+                        this.snackBar.open('Product deleted', 'Close', { duration: 3000 });
                         this.refreshTable();
                     },
                     error: (err) => {
-                        this.snackBar.open('Error deleting contact', 'Close', { duration: 3000 });
+                        this.snackBar.open('Error deleting product', 'Close', { duration: 3000 });
                         console.error(err);
                     }
                 });
@@ -172,9 +169,9 @@ export class ContactListComponent implements AfterViewInit, OnInit {
         });
     }
 
-    clearCustomerFilter() {
-        this.customerId = undefined;
-        this.customerName = undefined;
+    clearGroupFilter() {
+        this.groupId = undefined;
+        this.groupName = undefined;
         this.refreshTable();
     }
 }

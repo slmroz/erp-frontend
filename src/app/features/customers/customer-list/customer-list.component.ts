@@ -16,6 +16,7 @@ import { CustomerService } from '../../../api/customer.service';
 import { CustomerDto } from '../../../api/models';
 import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
 import { Router } from '@angular/router';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
     selector: 'app-customer-list',
@@ -30,7 +31,8 @@ import { Router } from '@angular/router';
         MatButtonModule,
         MatIconModule,
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatTooltipModule
     ],
     templateUrl: './customer-list.component.html',
     styleUrls: ['./customer-list.component.scss']
@@ -135,21 +137,38 @@ export class CustomerListComponent implements AfterViewInit {
     }
 
     deleteCustomer(customer: CustomerDto) {
-        if (confirm(`Are you sure you want to delete ${customer.name}?`)) {
-            this.customerService.deleteCustomer(customer.id).subscribe({
-                next: () => {
-                    this.snackBar.open('Customer deleted', 'Close', { duration: 3000 });
-                    this.refreshTable();
-                },
-                error: (err) => {
-                    this.snackBar.open('Error deleting customer', 'Close', { duration: 3000 });
-                    console.error(err);
-                }
-            });
-        }
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '400px',
+            data: {
+                title: 'Delete Customer',
+                message: `Are you sure you want to delete ${customer.name}?`,
+                confirmText: 'Delete',
+                confirmColor: 'warn'
+            } as ConfirmDialogData
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.customerService.deleteCustomer(customer.id).subscribe({
+                    next: () => {
+                        this.snackBar.open('Customer deleted', 'Close', { duration: 3000 });
+                        this.refreshTable();
+                    },
+                    error: (err) => {
+                        this.snackBar.open('Error deleting customer', 'Close', { duration: 3000 });
+                        console.error(err);
+                    }
+                });
+            }
+        });
     }
 
     goToContacts(customer: CustomerDto) {
-        this.router.navigate(['/contacts'], { queryParams: { customerId: customer.id } });
+        this.router.navigate(['/contacts'], {
+            queryParams: {
+                customerId: customer.id,
+                customerName: customer.name
+            }
+        });
     }
 }

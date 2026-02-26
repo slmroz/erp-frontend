@@ -67,6 +67,31 @@
             <span matListItemTitle>Contacts</span>
           </a>
         </div>
+
+        <mat-divider></mat-divider>
+
+        <mat-list-item (click)="isCatalogExpanded = !isCatalogExpanded" class="menu-group-header">
+          <mat-icon matListItemIcon>inventory</mat-icon>
+          <span matListItemTitle>Catalog</span>
+        </mat-list-item>
+
+        <div [class.hidden]="!isCatalogExpanded" class="submenu">
+          <a mat-list-item routerLink="/product-groups" routerLinkActive="active-link"
+            (click)="drawer.mode === 'over' ? drawer.close() : null">
+            <mat-icon matListItemIcon>category</mat-icon>
+            <span matListItemTitle>Product Groups</span>
+          </a>
+          <a mat-list-item routerLink="/products" routerLinkActive="active-link"
+            (click)="drawer.mode === 'over' ? drawer.close() : null">
+            <mat-icon matListItemIcon>inventory_2</mat-icon>
+            <span matListItemTitle>Products</span>
+          </a>
+          <a mat-list-item routerLink="/currencies" routerLinkActive="active-link"
+            (click)="drawer.mode === 'over' ? drawer.close() : null">
+            <mat-icon matListItemIcon>payments</mat-icon>
+            <span matListItemTitle>Currencies</span>
+          </a>
+        </div>
       </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content [class.dark-theme]="themeService.isDarkMode()">

@@ -135,3 +135,109 @@ export interface UpdateContactCommand {
     phoneNo?: string | null;
     email?: string | null;
 }
+
+// Product Group Interfaces
+export interface ProductGroupDto {
+    id: number;
+    name?: string | null;
+    description?: string | null;
+    createdAt: string;
+    lastUpdatedAt?: string | null;
+    removedAt?: string | null;
+    productCount: number;
+}
+
+export interface ProductGroupDtoPagedResult {
+    totalCount: number;
+    items?: ProductGroupDto[] | null;
+}
+
+export interface AddProductGroupCommand {
+    id?: number | null;
+    name?: string | null;
+    description?: string | null;
+}
+
+export interface UpdateProductGroupCommand {
+    id: number;
+    name?: string | null;
+    description?: string | null;
+}
+
+// Product Interfaces
+export interface ProductDto {
+    id: number;
+    productGroupId: number;
+    groupName?: string | null;
+    partNumber?: string | null;
+    name?: string | null;
+    description?: string | null;
+    oemBrand?: string | null;
+    listPrice?: number | null;
+    weightKg?: number | null;
+    createdAt: string;
+    lastUpdatedAt?: string | null;
+    removedAt?: string | null;
+}
+
+export interface ProductDtoPagedResult {
+    totalCount: number;
+    items?: ProductDto[] | null;
+}
+
+export interface AddProductCommand {
+    id?: number | null;
+    name?: string | null;
+    productGroupId: number;
+    partNumber?: string | null;
+    description?: string | null;
+    oemBrand?: string | null;
+    listPrice?: number | null;
+    weightKg?: number | null;
+}
+
+export interface UpdateProductCommand {
+    id: number;
+    name?: string | null;
+    productGroupId: number;
+    partNumber?: string | null;
+    description?: string | null;
+    oemBrand?: string | null;
+    listPrice?: number | null;
+    weightKg?: number | null;
+}
+
+// Currency Interfaces
+export interface CurrencyDto {
+    id: number;
+    baseCurrency?: string | null;
+    targetCurrency?: string | null;
+    rate: number;
+    createdAt: string;
+    lastUpdatedAt?: string | null;
+    removedAt?: string | null;
+}
+
+export interface CurrencyDtoPagedResult {
+    totalCount: number;
+    items?: CurrencyDto[] | null;
+}
+
+export interface AddCurrencyCommand {
+    id?: number | null;
+    baseCurrency?: string | null;
+    targetCurrency?: string | null;
+    rate: number;
+}
+
+export interface UpdateCurrencyCommand {
+    id: number;
+    baseCurrency?: string | null;
+    targetCurrency?: string | null;
+    rate: number;
+}
+
+export interface UpdateCurrencyListCommand {
+    [key: string]: any;
+}
+

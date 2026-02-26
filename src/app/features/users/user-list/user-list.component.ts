@@ -12,6 +12,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { UserService } from '../../../api/user.service';
 import { UserDto, Role } from '../../../api/models';
 import { UserDialogComponent } from '../user-dialog/user-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
     selector: 'app-user-list',
@@ -111,18 +112,30 @@ export class UserListComponent implements OnInit, AfterViewInit {
     }
 
     deleteUser(user: UserDto) {
-        if (confirm(`Are you sure you want to delete user ${user.email}?`)) {
-            this.userService.deleteUser(user.id).subscribe({
-                next: () => {
-                    this.snackBar.open('User deleted successfully', 'Close', { duration: 3000 });
-                    this.loadUsers();
-                },
-                error: (err) => {
-                    this.snackBar.open('Failed to delete user', 'Close', { duration: 3000 });
-                    console.error(err);
-                }
-            });
-        }
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '400px',
+            data: {
+                title: 'Delete User',
+                message: `Are you sure you want to delete user ${user.email}?`,
+                confirmText: 'Delete',
+                confirmColor: 'warn'
+            } as ConfirmDialogData
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.userService.deleteUser(user.id).subscribe({
+                    next: () => {
+                        this.snackBar.open('User deleted successfully', 'Close', { duration: 3000 });
+                        this.loadUsers();
+                    },
+                    error: (err) => {
+                        this.snackBar.open('Failed to delete user', 'Close', { duration: 3000 });
+                        console.error(err);
+                    }
+                });
+            }
+        });
     }
 
     getRoleName(role: number | Role | null | undefined): string {
