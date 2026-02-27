@@ -11,15 +11,31 @@ export class UserService {
     private http = inject(HttpClient);
     private config = inject(ConfigService);
 
-    getUsers(query?: GetUsers): Observable<UserDto[]> {
-        let params = new HttpParams();
-        if (query) {
-            Object.keys(query).forEach(key => {
-                if (query[key] !== undefined && query[key] !== null) {
-                    params = params.set(key, query[key]);
-                }
-            });
+    getUsers(
+        page: number = 1,
+        pageSize: number = 20,
+        search?: string,
+        role?: number,
+        sortBy?: string,
+        sortOrder?: string
+    ): Observable<UserDto[]> {
+        let params = new HttpParams()
+            .set('Page', page.toString())
+            .set('PageSize', pageSize.toString());
+
+        if (search) {
+            params = params.set('Search', search);
         }
+        if (role !== undefined && role !== null) {
+            params = params.set('Role', role.toString());
+        }
+        if (sortBy) {
+            params = params.set('SortBy', sortBy);
+        }
+        if (sortOrder) {
+            params = params.set('SortOrder', sortOrder);
+        }
+
         return this.http.get<UserDto[]>(`${this.config.apiUrl}/User`, { params });
     }
 

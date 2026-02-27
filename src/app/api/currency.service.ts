@@ -26,21 +26,21 @@ export class CurrencyService {
         sortOrder?: string
     ): Observable<CurrencyDtoPagedResult> {
         let params = new HttpParams()
-            .set('page', page.toString())
-            .set('pageSize', pageSize.toString())
-            .set('refresh', refresh.toString());
+            .set('Page', page.toString())
+            .set('PageSize', pageSize.toString())
+            .set('Refresh', refresh.toString());
 
         if (baseCurrency) {
-            params = params.set('baseCurrency', baseCurrency);
+            params = params.set('BaseCurrency', baseCurrency);
         }
         if (targetCurrency) {
-            params = params.set('targetCurrency', targetCurrency);
+            params = params.set('TargetCurrency', targetCurrency);
         }
         if (sortBy) {
-            params = params.set('sortBy', sortBy);
+            params = params.set('SortBy', sortBy);
         }
         if (sortOrder) {
-            params = params.set('sortOrder', sortOrder);
+            params = params.set('SortOrder', sortOrder);
         }
 
         return this.http.get<CurrencyDtoPagedResult>(`${this.config.apiUrl}/Currency`, { params });

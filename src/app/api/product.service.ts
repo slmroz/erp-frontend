@@ -10,16 +10,29 @@ import { ProductDto, ProductDtoPagedResult, AddProductCommand, UpdateProductComm
 export class ProductService {
     constructor(private http: HttpClient, private config: ConfigService) { }
 
-    getProducts(page: number = 1, pageSize: number = 20, search?: string, groupId?: number): Observable<ProductDtoPagedResult> {
+    getProducts(
+        page: number = 1,
+        pageSize: number = 20,
+        search?: string,
+        groupId?: number,
+        sortBy?: string,
+        sortOrder?: string
+    ): Observable<ProductDtoPagedResult> {
         let params = new HttpParams()
-            .set('page', page.toString())
-            .set('pageSize', pageSize.toString());
+            .set('Page', page.toString())
+            .set('PageSize', pageSize.toString());
 
         if (search) {
-            params = params.set('search', search);
+            params = params.set('Search', search);
         }
         if (groupId) {
-            params = params.set('groupId', groupId.toString());
+            params = params.set('GroupId', groupId.toString());
+        }
+        if (sortBy) {
+            params = params.set('SortBy', sortBy);
+        }
+        if (sortOrder) {
+            params = params.set('SortOrder', sortOrder);
         }
 
         return this.http.get<ProductDtoPagedResult>(`${this.config.apiUrl}/Products`, { params });

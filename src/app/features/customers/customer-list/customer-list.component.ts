@@ -11,7 +11,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { merge, fromEvent, of } from 'rxjs';
-import { catchError, map, startWith, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { catchError, map, startWith, switchMap, debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CustomerService } from '../../../api/customer.service';
 import { CustomerDto } from '../../../api/models';
 import { CustomerDialogComponent } from '../customer-dialog/customer-dialog.component';
@@ -32,7 +33,8 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/compo
         MatIconModule,
         MatDialogModule,
         MatSnackBarModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatProgressSpinnerModule
     ],
     templateUrl: './customer-list.component.html',
     styleUrls: ['./customer-list.component.scss']
@@ -57,17 +59,15 @@ export class CustomerListComponent implements AfterViewInit {
     ngAfterViewInit() {
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
-        fromEvent(this.input.nativeElement, 'keyup')
-            .pipe(
-                debounceTime(150),
-                distinctUntilChanged(),
-            )
-            .subscribe(() => {
+        const searchEvent = fromEvent(this.input.nativeElement, 'keyup').pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            tap(() => {
                 this.paginator.pageIndex = 0;
-                this.refreshTable();
-            });
+            })
+        );
 
-        merge(this.sort.sortChange, this.paginator.page)
+        merge(this.sort.sortChange, this.paginator.page, searchEvent)
             .pipe(
                 startWith({}),
                 switchMap(() => {
@@ -75,7 +75,9 @@ export class CustomerListComponent implements AfterViewInit {
                     return this.customerService.getCustomers(
                         this.paginator.pageIndex + 1,
                         this.paginator.pageSize,
-                        this.input.nativeElement.value
+                        this.input.nativeElement.value,
+                        this.sort.active,
+                        this.sort.direction
                     ).pipe(catchError(() => of(null)));
                 }),
                 map(data => {

@@ -15,13 +15,25 @@ export class CustomerService {
         return this.configService.apiUrl;
     }
 
-    getCustomers(page: number = 1, pageSize: number = 20, search?: string): Observable<CustomerDtoPagedResult> {
+    getCustomers(
+        page: number = 1,
+        pageSize: number = 20,
+        search?: string,
+        sortBy?: string,
+        sortOrder?: string
+    ): Observable<CustomerDtoPagedResult> {
         let params = new HttpParams()
-            .set('page', page.toString())
-            .set('pageSize', pageSize.toString());
+            .set('Page', page.toString())
+            .set('PageSize', pageSize.toString());
 
         if (search) {
-            params = params.set('search', search);
+            params = params.set('Search', search);
+        }
+        if (sortBy) {
+            params = params.set('SortBy', sortBy);
+        }
+        if (sortOrder) {
+            params = params.set('SortOrder', sortOrder);
         }
 
         return this.http.get<CustomerDtoPagedResult>(`${this.apiUrl}/Customers`, { params });

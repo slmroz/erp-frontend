@@ -14,7 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { merge, fromEvent, of } from 'rxjs';
-import { catchError, map, startWith, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { catchError, map, startWith, switchMap, debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { ProductService } from '../../../api/product.service';
 import { ProductDto } from '../../../api/models';
 import { ProductDialogComponent } from '../product-dialog/product-dialog.component';
@@ -74,17 +74,15 @@ export class ProductListComponent implements AfterViewInit, OnInit {
     ngAfterViewInit() {
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
-        fromEvent(this.input.nativeElement, 'keyup')
-            .pipe(
-                debounceTime(150),
-                distinctUntilChanged(),
-            )
-            .subscribe(() => {
+        const searchEvent = fromEvent(this.input.nativeElement, 'keyup').pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            tap(() => {
                 this.paginator.pageIndex = 0;
-                this.refreshTable();
-            });
+            })
+        );
 
-        merge(this.sort.sortChange, this.paginator.page)
+        merge(this.sort.sortChange, this.paginator.page, searchEvent)
             .pipe(
                 startWith({}),
                 switchMap(() => {
@@ -93,7 +91,9 @@ export class ProductListComponent implements AfterViewInit, OnInit {
                         this.paginator.pageIndex + 1,
                         this.paginator.pageSize,
                         this.input.nativeElement.value,
-                        this.groupId
+                        this.groupId,
+                        this.sort.active,
+                        this.sort.direction
                     ).pipe(catchError(() => of(null)));
                 }),
                 map(data => {

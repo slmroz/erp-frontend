@@ -1212,10 +1212,48 @@
                 ],
                 "parameters": [
                     {
-                        "name": "query",
+                        "name": "Page",
                         "in": "query",
                         "schema": {
-                            "$ref": "#/components/schemas/GetUsersQuery"
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "Search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Role",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "SortBy",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "SortOrder",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -1988,10 +2026,6 @@
                         "nullable": true
                     }
                 },
-                "additionalProperties": false
-            },
-            "GetUsersQuery": {
-                "type": "object",
                 "additionalProperties": false
             },
             "JwtDto": {

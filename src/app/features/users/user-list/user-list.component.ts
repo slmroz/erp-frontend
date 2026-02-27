@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, inject, signal, effect } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, inject, signal, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -9,6 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { merge, of, fromEvent } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { UserService } from '../../../api/user.service';
 import { UserDto, Role } from '../../../api/models';
 import { UserDialogComponent } from '../user-dialog/user-dialog.component';
@@ -27,7 +30,8 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/compo
         MatIconModule,
         MatButtonModule,
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatProgressSpinnerModule
     ],
     templateUrl: './user-list.component.html',
     styleUrls: ['./user-list.component.scss']
@@ -39,50 +43,68 @@ export class UserListComponent implements OnInit, AfterViewInit {
 
     displayedColumns: string[] = ['id', 'email', 'firstName', 'lastName', 'role', 'actions'];
     dataSource = new MatTableDataSource<UserDto>([]);
+    resultsLength = 0;
+    isLoadingResults = true;
     Role = Role;
-
-    users = signal<UserDto[]>([]);
-    isLoading = signal<boolean>(true);
 
     @ViewChild(MatSort) sort!: MatSort;
     @ViewChild(MatPaginator) paginator!: MatPaginator;
+    @ViewChild('input') input!: ElementRef;
 
-    constructor() {
-        effect(() => {
-            this.dataSource.data = this.users();
-        });
-    }
+    constructor() { }
 
-    ngOnInit() {
-        this.loadUsers();
-    }
+    ngOnInit() { }
 
     ngAfterViewInit() {
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
+        // If the user changes the sort order, reset back to the first page.
+        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+        const searchEvent = fromEvent(this.input.nativeElement, 'keyup').pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            tap(() => {
+                this.paginator.pageIndex = 0;
+            })
+        );
+
+        merge(this.sort.sortChange, this.paginator.page, searchEvent)
+            .pipe(
+                startWith({}),
+                switchMap(() => {
+                    this.isLoadingResults = true;
+                    return this.userService.getUsers(
+                        this.paginator.pageIndex + 1,
+                        this.paginator.pageSize,
+                        this.input.nativeElement.value,
+                        undefined, // Role filter could be added here if needed
+                        this.sort.active,
+                        this.sort.direction
+                    ).pipe(catchError(() => of(null)));
+                }),
+                map(data => {
+                    this.isLoadingResults = false;
+
+                    if (data === null) {
+                        return [];
+                    }
+
+                    // Since API returns UserDto[] instead of PagedResult, 
+                    // we don't know the actual total length. 
+                    // We'll set it to something or just show what we have.
+                    this.resultsLength = data.length; // This is a limitation if not returned by API
+                    return data;
+                })
+            )
+            .subscribe(data => (this.dataSource.data = data));
     }
 
     loadUsers() {
-        this.isLoading.set(true);
-        this.userService.getUsers().subscribe({
-            next: (data) => {
-                this.users.set(data);
-                this.isLoading.set(false);
-            },
-            error: (err) => {
-                console.error('Failed to load users', err);
-                this.isLoading.set(false);
-            }
-        });
+        // This triggers the merge stream above
+        this.paginator.page.emit();
     }
 
     applyFilter(event: Event) {
-        const filterValue = (event.target as HTMLInputElement).value;
-        this.dataSource.filter = filterValue.trim().toLowerCase();
-
-        if (this.dataSource.paginator) {
-            this.dataSource.paginator.firstPage();
-        }
+        // Handled by fromEvent in ngAfterViewInit
     }
 
     addUser() {
